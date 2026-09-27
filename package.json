@@ -1,0 +1,28 @@
+{
+	"name": "pi-ask-jev-question",
+	"version": "0.1.0",
+	"description": "Pi coding-agent extension: ask the user questions with Jev (TypeSafe System One) pre-scored recommendations — probability bars + confidence, via the OpenRouter Decisions API.",
+	"license": "MIT",
+	"keywords": [
+		"pi-package",
+		"pi-extension",
+		"pi",
+		"pi-coding-agent",
+		"jev",
+		"typesafe",
+		"openrouter",
+		"questionnaire"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/shadyvb/pi-ask-jev-question.git"
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-coding-agent": "*",
+		"@earendil-works/pi-tui": "*",
+		"typebox": "*"
+	},
+	"pi": {
+		"extensions": ["extensions"]
+	}
+}
