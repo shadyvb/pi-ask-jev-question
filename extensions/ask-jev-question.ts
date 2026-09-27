@@ -229,8 +229,15 @@ async function scoreWithJev(context: string, questions: Question[]): Promise<Jev
 			const probabilities = isProbRecord(ans.probabilities) ? ans.probabilities : undefined;
 			let recommended: string | undefined;
 			if (probabilities) {
-				// Recommended = highest probability option
-				recommended = Object.entries(probabilities).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+				// Recommended = highest probability among *valid* option values.
+				// Filters out foreign keys (API drift) and guards the empty-record
+				// case, which would otherwise throw on reduce with no initial value.
+				const validEntries = Object.entries(probabilities).filter(([value]) =>
+					q.options.some((o) => o.value === value),
+				);
+				if (validEntries.length > 0) {
+					recommended = validEntries.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+				}
 			} else if (typeof ans.choice === "string") {
 				recommended = ans.choice;
 			}
@@ -507,7 +514,11 @@ export default function askJevQuestion(pi: ExtensionAPI) {
 								refresh();
 								return;
 							}
-							saveAnswer(q.id, opt.value, opt.label, false, optionIndex + 1);
+							// Resolve the original index in q.options — the display list is
+							// reordered (recommended option unshifted to front), so optionIndex
+							// is a display position, not an option position.
+							const originalIndex = q.options.findIndex((o) => o.value === opt.value);
+							saveAnswer(q.id, opt.value, opt.label, false, originalIndex + 1);
 							advanceAfterAnswer();
 							return;
 						}
